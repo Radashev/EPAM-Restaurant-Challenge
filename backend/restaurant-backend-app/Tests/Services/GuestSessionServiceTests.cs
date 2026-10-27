@@ -734,34 +734,77 @@ public class GuestSessionServiceTests
     }
 
     [Fact]
-    public async Task GetGroupSessionsAsync_OwnerWithGuestSessions_ReturnsParticipantSnapshot()
+    public async Task GetGroupSessionsAsync_OwnerWithMultipleGuests_ReturnsMappedItemsAndCorrectTotals()
     {
         const string userId = "owner";
         const string groupId = "group";
-        var (group, _) = SetupOwnedReservation(groupId, "reservation", userId);
-        var guest = new GuestSession
+        SetupOwnedReservation(groupId, "reservation", userId);
+        var andrii = new GuestSession
         {
-            Id = "guest-session",
+            Id = "session1",
             GroupReservationId = groupId,
-            GuestName = "Guest",
-            Dishes = []
+            GuestName = "Andrii",
+            Dishes = [new OrderItem { DishId = "dish1", Quantity = 2 }],
+            IsSubmitted = true
+        };
+        var olena = new GuestSession
+        {
+            Id = "session2",
+            GroupReservationId = groupId,
+            GuestName = "Olena",
+            Dishes = [new OrderItem { DishId = "dish2", Quantity = 1 }],
+            IsSubmitted = false
+        };
+        var caesarSalad = new Dish
+        {
+            Id = "dish1",
+            Name = "Caesar Salad",
+            Price = 180m,
+            LocationId = "location"
+        };
+        var tomYum = new Dish
+        {
+            Id = "dish2",
+            Name = "Tom Yum",
+            Price = 220m,
+            LocationId = "location"
         };
         _mockGuestSessionRepository
             .Setup(r => r.GetAllByGroupReservationIdAsync(groupId))
-            .ReturnsAsync([guest]);
+            .ReturnsAsync([andrii, olena]);
         _mockDishRepository
             .Setup(r => r.GetDishesByIdsAsync(It.IsAny<IEnumerable<string>>()))
-            .ReturnsAsync(Array.Empty<Dish>());
+            .ReturnsAsync([caesarSalad, tomYum]);
 
         var result = await _guestSessionService.GetGroupSessionsAsync(userId, groupId);
 
-        var participant = Assert.Single(result.Participants);
-        Assert.Equal(guest.Id, participant.Id);
-        Assert.Equal(ParticipantType.Guest, participant.Type);
-        Assert.Equal(guest.GuestName, participant.Name);
-        Assert.Empty(participant.Items);
-        Assert.Equal(0, result.Total);
-        Assert.Equal(GroupReservationStatus.Open, group.Status);
+        var participants = result.Participants.ToDictionary(participant => participant.Id);
+        Assert.Equal(2, participants.Count);
+
+        var andriiParticipant = participants[andrii.Id];
+        Assert.Equal(ParticipantType.Guest, andriiParticipant.Type);
+        Assert.Equal("Andrii", andriiParticipant.Name);
+        Assert.True(andriiParticipant.IsSubmitted);
+        var andriiItem = Assert.Single(andriiParticipant.Items);
+        Assert.Equal("dish1", andriiItem.Dish.Id);
+        Assert.Equal("Caesar Salad", andriiItem.Dish.Name);
+        Assert.Equal(180m, andriiItem.Dish.Price);
+        Assert.Equal(2, andriiItem.Quantity);
+        Assert.Equal(360m, andriiParticipant.Total);
+
+        var olenaParticipant = participants[olena.Id];
+        Assert.Equal(ParticipantType.Guest, olenaParticipant.Type);
+        Assert.Equal("Olena", olenaParticipant.Name);
+        Assert.False(olenaParticipant.IsSubmitted);
+        var olenaItem = Assert.Single(olenaParticipant.Items);
+        Assert.Equal("dish2", olenaItem.Dish.Id);
+        Assert.Equal("Tom Yum", olenaItem.Dish.Name);
+        Assert.Equal(220m, olenaItem.Dish.Price);
+        Assert.Equal(1, olenaItem.Quantity);
+        Assert.Equal(220m, olenaParticipant.Total);
+
+        Assert.Equal(580m, result.Total);
+        Assert.Equal(result.Participants.Sum(participant => participant.Total), result.Total);
     }
 
     [Fact]
@@ -1199,6 +1242,5 @@ public class GuestSessionServiceTests
         return (group, reservation);
     }
 }
-
 
 
