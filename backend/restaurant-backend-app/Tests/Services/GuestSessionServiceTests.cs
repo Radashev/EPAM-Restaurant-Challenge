@@ -1129,6 +1129,18 @@ public class GuestSessionServiceTests
     {
         SetupOwnedReservation("group", "reservation", "owner");
 
+        var differentReservation = new Reservation
+    {
+        Id = "different-reservation",
+        TableId = "table",
+        WaiterId = "waiter",
+        CustomerId = "owner"
+    };
+
+    _mockReservationRepository
+        .Setup(r => r.GetReservationByIdAsync("different-reservation"))
+        .ReturnsAsync(differentReservation);
+
         await Assert.ThrowsAsync<ValidationException>(
             () => _guestSessionService.SubmitGroupReservationAsync("owner", "group", "different-reservation"));
     }
