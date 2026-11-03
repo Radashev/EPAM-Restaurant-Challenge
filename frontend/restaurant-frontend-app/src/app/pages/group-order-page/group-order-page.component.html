@@ -1,0 +1,122 @@
+@if (loadError()) {
+<div class="load-error" role="alert">
+    <p>{{ loadError() }}</p>
+
+    <button type="button" (click)="loadGroupOrder()">
+        Try again
+    </button>
+</div>
+}
+
+<main class="page">
+    <header class="page-header">
+        <h1>Group Pre-Order</h1>
+
+        <p class="restaurant-name">
+            {{ invite().RestaurantName }}
+        </p>
+
+        <p class="location">
+            {{ invite().LocationAddress }}
+        </p>
+
+        <p class="reservation-date">
+            {{ invite().StartTime | date:'MMM d, y' }}
+        </p>
+
+        <p class="reservation-time">
+            {{ invite().StartTime | date:'shortTime' }}
+            –
+            {{ invite().EndTime | date:'shortTime' }}
+        </p>
+
+        <p class="guest-count">
+            {{ participants().length }} of
+            {{ invite().MaxGuestCount }} guests
+        </p>
+    </header>
+
+    @if (groupStatus() === 'Open' && pendingCount() > 0) {
+    <p class="pending-warning">
+        {{ pendingCount() }}
+        {{ pendingCount() === 1 ? 'participant hasn’t' : 'participants haven’t' }}
+        submitted their pre-order yet.
+    </p>
+    }
+
+    <section aria-label="Participants">
+        <ul class="participants">
+            @for (person of participants(); track person.id) {
+            <li>
+              @if (person.id === ownerSessionId()) {
+                <p class="my-preorder-label">My Pre-Order</p>
+            }
+                <app-participant-card [participant]="person" />
+            </li>
+            }
+        </ul>
+    </section>
+
+    <section class="consolidated-order" aria-label="Consolidated Pre-Order">
+        <h2>Consolidated Pre-Order</h2>
+    
+        @if (consolidatedOrder().items.length > 0) {
+        <ul>
+            @for (item of consolidatedOrder().items; track item.dish.id) {
+            <li>
+                {{ item.dish.name }} × {{ item.quantity }}
+                — {{ item.dish.price * item.quantity | currency }}
+            </li>
+            }
+        </ul>
+        } @else {
+        <p>Participants haven't added any dishes yet.</p>
+        }
+    </section>
+
+
+    <footer class="grand-total">
+        <div>
+            <strong>Grand Total</strong>
+            <strong>{{ confirmedTotal() | currency }}</strong>
+        </div>
+    
+        <p class="group-status">
+            @if (groupStatus() === 'Submitted') {
+            Sent to Restaurant
+            } @else {
+            Collecting pre-orders
+            }
+        </p>
+    
+        @if (groupStatus() !== 'Submitted') {
+        <button type="button" class="submit-button" [disabled]="confirmedTotal() === 0" (click)="openSubmitConfirmation()">
+            Submit Pre-Order
+        </button>
+        }
+    </footer>
+
+</main>
+
+@if (showSubmitConfirmation()) {
+<app-modal title="Submit Group Pre-Order" (closed)="cancelSubmitConfirmation()">
+    <p>
+        Are you sure you want to send the group pre-order
+        to the restaurant?
+    </p>
+
+    <p>
+        Only confirmed pre-orders will be included.
+    </p>
+
+    <div class="confirmation-actions">
+        <button type="button" (click)="cancelSubmitConfirmation()">
+            Cancel
+        </button>
+
+        <button type="button" (click)="submitGroupOrder()">
+            Submit
+        </button>
+    </div>
+</app-modal>
+}

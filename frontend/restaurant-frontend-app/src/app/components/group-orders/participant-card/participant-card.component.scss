@@ -1,0 +1,62 @@
+.card {
+    background: #fff;
+    border: 1px solid #e2e7e2;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+}
+
+.title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.chip {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 16px;
+    font-size: 13px;
+    margin-bottom: 12px;
+}
+
+.submitted {
+    background: #e4f4e8;
+    color: #176534;
+}
+
+.pending {
+    background: #fff3d6;
+    color: #805400;
+}
+
+.items {
+    list-style: none;
+    padding: 0;
+}
+
+.item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.avatar {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.name {
+    flex: 1;
+}
+
+.subtotal {
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600;
+    margin-top: 16px;
+}
