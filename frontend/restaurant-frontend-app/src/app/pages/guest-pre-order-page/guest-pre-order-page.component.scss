@@ -270,3 +270,41 @@
         }
     }
 }
+
+.confirmation-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 16px;
+    margin-top: 28px;
+
+    button {
+        min-width: 110px;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+
+    button:first-child {
+        background-color: #ffffff;
+        color: #333333;
+        border: 1px solid #cccccc;
+
+        &:hover {
+            background-color: #f3f3f3;
+        }
+    }
+
+    button:last-child {
+        background-color: #287a48;
+        color: #ffffff;
+        border: 1px solid #287a48;
+
+        &:hover {
+            background-color: #1e6037;
+        }
+    }
+}

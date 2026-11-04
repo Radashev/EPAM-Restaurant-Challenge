@@ -95,3 +95,57 @@ h1 {
         font-size: 18px;
     }
 }
+.confirmation-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 16px;
+  margin-top: 28px;
+
+  button {
+    min-width: 110px;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  button:first-child {
+    background: #ffffff;
+    color: #333333;
+    border: 1px solid #cccccc;
+  }
+
+  button:last-child {
+    background: #287a48;
+    color: #ffffff;
+    border: 1px solid #287a48;
+  }
+}
+
+
+.submit-button {
+    background-color: #287a48;
+    color: #ffffff;
+    border: 1px solid #287a48;
+    border-radius: 10px;
+    padding: 14px 24px;
+    min-height: 48px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color 0.2s ease;
+
+    &:hover:not(:disabled) {
+        background-color: #1e6037;
+    }
+
+    &:disabled {
+        background-color: #a8b5aa;
+        border-color: #a8b5aa;
+        cursor: not-allowed;
+        opacity: 0.7;
+    }
+}

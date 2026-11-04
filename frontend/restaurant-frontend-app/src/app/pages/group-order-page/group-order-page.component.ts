@@ -53,9 +53,15 @@ export class GroupOrderPageComponent implements OnInit {
     consolidatePreOrder(this.participants())
     );
     
-    
 
 ngOnInit(): void {
+    const isDemo =
+        this.route.snapshot.routeConfig?.path === 'group-order-demo';
+
+    if (isDemo) {
+        return;
+    }
+
     this.loadGroupOrder();
 }
 
@@ -118,8 +124,6 @@ loadGroupOrder(): void {
 }
 
 
-
-
     openSubmitConfirmation(): void {
         if (this.groupStatus() !== 'Open') {
             return;
@@ -134,6 +138,11 @@ loadGroupOrder(): void {
     
     
 submitGroupOrder(): void {
+    // Demo mode must never submit an order to the real backend.
+    if (this.route.snapshot.routeConfig?.path === 'group-order-demo') {
+        return;
+    }
+    
     if (this.isSubmitting()) {
         return;
     }

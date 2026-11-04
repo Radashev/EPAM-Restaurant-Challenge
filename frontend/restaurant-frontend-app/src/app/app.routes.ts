@@ -104,6 +104,14 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'group-order-demo',
+        loadComponent: () =>
+          import('./pages/group-order-page/group-order-page.component').then(
+            (m) => m.GroupOrderPageComponent
+          ),
+      },
+
+      {
         path: 'reservations/:reservationId/group-order',
         canActivate: [AuthGuard],
         data: { authorized: true },
